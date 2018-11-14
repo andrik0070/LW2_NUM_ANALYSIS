@@ -76,7 +76,8 @@ for i in range(degree_of_polynom + 1):
     lin_eq[i].append(B[i])
 
 
-pprint(gauss(lin_eq))
+if __name__ == "__main__":
+    pprint(gauss(lin_eq))
 
 
 
