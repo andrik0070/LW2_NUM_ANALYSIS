@@ -69,10 +69,17 @@ def cubic_spline_interpolation(x, y):
 
     l.append(1)
     z.append(0)
-    c = [None] * (n - 1)
+    c = [0] * (n - 1)
     c.append(0)
+    b = [0] * n
+    d = [0] * n
 
-    for
+    for j in range(n - 1, -1):
+        c[j] = z[j] - m[j] * c[j + 1]
+        b[j] = (a[j + 1] - a[j])/h[j] - h[j] * (c[j + 1] + 2 * c[j])/3
+        d[]
+
+
 
 
 
