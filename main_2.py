@@ -19,24 +19,26 @@ def TDMA(a, b, c, f):
         x[i] = alpha[i + 1] * x[i + 1] + beta[i + 1]
 
     return x
+    
 
 
 def cubic_spline_interpolation(x, y):
+    n = len(x)
     h = []
     a = []
     lower_diagonal = []
     middle_diagonal = []
     upper_diagonal = []
 
-    for i in range(len(x) - 1):
+    for i in range(n - 1):
         h.append(x[i + 1] - x[i])
 
     a.append(0.0)
-    for i in range(1, len(x) - 1):
+    for i in range(1, n - 1):
         a.append(3 / h[i] * (y[i + 1] - y[i]) - 3 / h[i - 1] * (y[i] - y[i - 1]))
     a.append(0.0)
 
-    for i in range(len(x) - 2):
+    '''for i in range(len(x) - 2):
         lower_diagonal.append(h[i])
     lower_diagonal.append(0.0)
 
@@ -54,7 +56,26 @@ def cubic_spline_interpolation(x, y):
     pprint(len(upper_diagonal))
     pprint(len(a))
 
-    pprint(TDMA(lower_diagonal, middle_diagonal, upper_diagonal, a))
+    pprint(TDMA(lower_diagonal, middle_diagonal, upper_diagonal, a))'''
+
+    l = [1]
+    m = [0]
+    z = [0]
+
+    for i in range(1, n - 1):
+        l[i] = 2 * (x[i + 1] - x[i - 1]) - h[i - 1] * m[i - 1]
+        m[i] = h[i]/l[i]
+        z[i] = (a[i] - h[i - 1] * m[i - 1]) / l[i]
+
+    l.append(1)
+    z.append(0)
+    c = [None] * (n - 1)
+    c.append(0)
+
+    for
+
+
+
 
 
 if __name__ == "__main__":
