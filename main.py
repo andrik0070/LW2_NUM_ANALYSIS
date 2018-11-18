@@ -1,4 +1,5 @@
 from pprint import pprint
+import matplotlib.pyplot as plt
 import numpy as np
 
 def gauss(A):
@@ -34,50 +35,61 @@ def gauss(A):
 
 x = [1, 2, 3, 4, 5, 6, 7, 8]
 y = [5.95, 20.95, 51.9, 105, 186, 301, 456.1, 657.1]
-degree_of_polynom = 6
-x_degrees = []
 
-for i in range(0, len(x)):
-    x_degrees.append([x[i]])
+def ls_approx(x, y, degree_of_polynom):
+    x_degrees = []
 
-for key, value in enumerate(x):
-    for i in range(1, (degree_of_polynom * 2)):
-        x_degrees[key].append(x_degrees[key][i - 1] * value)
+    for i in range(0, len(x)):
+        x_degrees.append([x[i]])
 
-x_degrees_sum = []
+    for key, value in enumerate(x):
+        for i in range(1, (degree_of_polynom * 2)):
+            x_degrees[key].append(x_degrees[key][i - 1] * value)
 
-for degree in range(1, (degree_of_polynom * 2) + 1):
-    degree_sum = 0
-    for el in x_degrees:
-        degree_sum += el[degree - 1]
-    x_degrees_sum.append(degree_sum)
+    x_degrees_sum = []
 
-pprint(x_degrees_sum)
-x_degrees_sum.insert(0, len(x)+1)
+    for degree in range(1, (degree_of_polynom * 2) + 1):
+        degree_sum = 0
+        for el in x_degrees:
+            degree_sum += el[degree - 1]
+        x_degrees_sum.append(degree_sum)
 
-lin_eq = [[0 for i in range(degree_of_polynom + 1)] for j in range(degree_of_polynom + 1)]
+    x_degrees_sum.insert(0, len(x) + 1)
 
-for i in range(degree_of_polynom + 1):
-    for j in range(degree_of_polynom + 1):
-        lin_eq[i][j] = x_degrees_sum[i+j]
+    lin_eq = [[0 for i in range(degree_of_polynom + 1)] for j in range(degree_of_polynom + 1)]
 
-pprint(lin_eq)
+    for i in range(degree_of_polynom + 1):
+        for j in range(degree_of_polynom + 1):
+            lin_eq[i][j] = x_degrees_sum[i + j]
 
+    B = [sum(y)]
 
-B = [sum(y)]
+    for i in range(0, degree_of_polynom):
+        b = 0
+        for j in range(0, len(x)):
+            b += y[j] * x_degrees[j][i]
+        B.append(b)
 
-for i in range(0, degree_of_polynom):
-    b = 0
-    for j in range(0, len(x)):
-        b += y[j] * x_degrees[j][i]
-    B.append(b)
+    for i in range(degree_of_polynom + 1):
+        lin_eq[i].append(B[i])
 
-for i in range(degree_of_polynom + 1):
-    lin_eq[i].append(B[i])
+    return gauss(lin_eq)
 
 
 if __name__ == "__main__":
-    pprint(gauss(lin_eq))
+    # pprint(gauss(lin_eq))
+
+    coeffs = ls_approx(x, y, 6)
+    xs = np.linspace(0, 10, 22)
+    ys = np.polynomial.polynomial.polyval(xs, coeffs)
+
+    plt.scatter(x, y, edgecolors='blue')
+    plt.plot(xs, np.polynomial.polynomial.polyval(xs, coeffs), color='red')
+    plt.show()
+
+
+
+
 
 
 

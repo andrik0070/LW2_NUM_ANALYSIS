@@ -1,8 +1,10 @@
 from pprint import pprint
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 def TDMA(a, b, c, f):
-    #a, b, c, f = map(lambda k_list: map(float, k_list), (a, b, c, f))
+    # a, b, c, f = map(lambda k_list: map(float, k_list), (a, b, c, f))
 
     alpha = [0]
     beta = [0]
@@ -19,24 +21,27 @@ def TDMA(a, b, c, f):
         x[i] = alpha[i + 1] * x[i + 1] + beta[i + 1]
 
     return x
-    
 
 
 def cubic_spline_interpolation(x, y):
     n = len(x)
     h = []
     a = []
-    lower_diagonal = []
+
+    '''lower_diagonal = []
     middle_diagonal = []
-    upper_diagonal = []
+    upper_diagonal = []'''
 
     for i in range(n - 1):
         h.append(x[i + 1] - x[i])
 
-    a.append(0.0)
+    pprint(h)
+
+    a.append(0)
     for i in range(1, n - 1):
         a.append(3 / h[i] * (y[i + 1] - y[i]) - 3 / h[i - 1] * (y[i] - y[i - 1]))
-    a.append(0.0)
+
+    pprint(a)
 
     '''for i in range(len(x) - 2):
         lower_diagonal.append(h[i])
@@ -63,20 +68,58 @@ def cubic_spline_interpolation(x, y):
     z = [0]
 
     for i in range(1, n - 1):
-        l[i] = 2 * (x[i + 1] - x[i - 1]) - h[i - 1] * m[i - 1]
-        m[i] = h[i]/l[i]
-        z[i] = (a[i] - h[i - 1] * m[i - 1]) / l[i]
+        l.append(2 * (x[i + 1] - x[i - 1]) - h[i - 1] * m[i - 1])
+        m.append(h[i] / l[i])
+        z.append((a[i] - h[i - 1] * z[i - 1]) / l[i])
+
+    pprint('l:' + str(l))
+
+    pprint('m:' + str(m))
+
+    pprint('z:' + str(z))
 
     l.append(1)
     z.append(0)
-    c = [None] * (n - 1)
+
+    c = [0] * (n - 1)
+    b = [0] * (n - 1)
+    d = [0] * (n - 1)
     c.append(0)
 
-    for
+    for j in range(n - 2, -1, -1):
+        c[j] = z[j] - m[j] * c[j + 1]
+        b[j] = (y[j + 1] - y[j]) / h[j] - h[j] * (c[j + 1] + 2 * c[j]) / 3
+        d[j] = (c[j + 1] - c[j]) / (3 * h[j])
 
+    c.pop()
 
+    pprint('a: ' + str(y))
+    pprint('b: ' + str(b))
+    pprint('c: ' + str(c))
+    pprint('d: ' + str(d))
 
+    return y, b, c, d
 
 
 if __name__ == "__main__":
-    cubic_spline_interpolation([1, 2, 3, 4, 5, 6, 7], [1, 4, 9, 16, 25, 36, 49])
+    x = [1, 2, 3, 4, 5, 6, 7]
+    y = [1, 7, 15, 21, 46, 79, 110]
+
+    a, b, c, d = cubic_spline_interpolation(x, y)
+
+    pprint(len(a))
+    pprint(len(b))
+    pprint(len(c))
+    pprint(len(d))
+
+    for i in range(0, len(x) - 1):
+        xs = np.linspace(x[i], x[i + 1], 100)
+        ys = []
+        for j in xs:
+            x_diff = j - x[i]
+            ys.append(a[i] + b[i] * x_diff + c[i] * x_diff**2 + d[i] * x_diff**3)
+            plt.plot(xs, ys, color='red')
+
+    plt.show()
+
+
