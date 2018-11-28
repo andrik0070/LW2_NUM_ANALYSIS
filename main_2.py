@@ -1,36 +1,13 @@
 from pprint import pprint
 import numpy as np
 import matplotlib.pyplot as plt
-
-
-def TDMA(a, b, c, f):
-    # a, b, c, f = map(lambda k_list: map(float, k_list), (a, b, c, f))
-
-    alpha = [0]
-    beta = [0]
-    n = len(f)
-    x = [0 for i in range(n)]
-
-    for i in range(n - 1):
-        alpha.append(-b[i] / (a[i] * alpha[i] + c[i]))
-        beta.append((f[i] - a[i] * beta[i]) / (a[i] * alpha[i] + c[i]))
-
-    x[n - 1] = (f[n - 1] - a[n - 2] * beta[n - 1]) / (c[n - 1] + a[n - 2] * alpha[n - 1])
-
-    for i in reversed(range(n - 1)):
-        x[i] = alpha[i + 1] * x[i + 1] + beta[i + 1]
-
-    return x
-
+import math
+import time
 
 def cubic_spline_interpolation(x, y):
     n = len(x)
     h = []
     a = []
-
-    '''lower_diagonal = []
-    middle_diagonal = []
-    upper_diagonal = []'''
 
     for i in range(n - 1):
         h.append(x[i + 1] - x[i])
@@ -42,26 +19,6 @@ def cubic_spline_interpolation(x, y):
         a.append(3 / h[i] * (y[i + 1] - y[i]) - 3 / h[i - 1] * (y[i] - y[i - 1]))
 
     pprint(a)
-
-    '''for i in range(len(x) - 2):
-        lower_diagonal.append(h[i])
-    lower_diagonal.append(0.0)
-
-    middle_diagonal.append(1.0)
-    for i in range(2, len(x)):
-        middle_diagonal.append(2.0 * (h[i - 2] + h[i - 1]))
-    middle_diagonal.append(1.0)
-
-    upper_diagonal.append(0.0)
-    for i in range(1, len(x) - 1):
-        upper_diagonal.append(h[i])
-
-    pprint(len(lower_diagonal))
-    pprint(len(middle_diagonal))
-    pprint(len(upper_diagonal))
-    pprint(len(a))
-
-    pprint(TDMA(lower_diagonal, middle_diagonal, upper_diagonal, a))'''
 
     l = [1]
     m = [0]
@@ -102,15 +59,31 @@ def cubic_spline_interpolation(x, y):
 
 
 if __name__ == "__main__":
-    x = [1, 2, 3, 4, 5, 6, 7]
-    y = [1, 7, 15, 21, 46, 79, 110]
+    #x = [10, 17, 24, 33, 47, 48, 59]
+    #y = [22, 34,  78, 99, 23, 115, 119]
+
+    x = [-2.0]
+    y = []
+
+    summ = -2.0
+
+    for i in range(0, 8):
+        summ += 0.5
+        x.append(summ)
+
+    for s in x:
+        y.append(math.sin(5 * s) * 2.71828183**s)
+
+    start_time = time.time()
 
     a, b, c, d = cubic_spline_interpolation(x, y)
 
-    pprint(len(a))
-    pprint(len(b))
-    pprint(len(c))
-    pprint(len(d))
+    pprint("Execution time:" + str(time.time() - start_time))
+
+    pprint(a)
+    pprint(b)
+    pprint(c)
+    pprint(d)
 
     for i in range(0, len(x) - 1):
         xs = np.linspace(x[i], x[i + 1], 100)
@@ -118,8 +91,10 @@ if __name__ == "__main__":
         for j in xs:
             x_diff = j - x[i]
             ys.append(a[i] + b[i] * x_diff + c[i] * x_diff**2 + d[i] * x_diff**3)
-            plt.plot(xs, ys, color='red')
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.plot(xs, ys, color='red')
+
+    plt.scatter(x, y, edgecolors='blue')
 
     plt.show()
-
-
